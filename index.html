@@ -34,7 +34,8 @@
         <img src="employee.png" class="w-100 rounded my-1"/>
         <div class="d-flex justify-content-between">
               <button type="button" class="btn btn-primary"  ng-click="modal('form',true)">New Employee</button>
-              <button type="button" class="btn btn-secondary"    ng-click="loadData()">Load Data</button>
+              <button type="button" class="btn btn-secondary"    ng-click="loadData()"  ng-disabled="loading" >  <div class="spinner-border spinner-border-sm text-light" role="status" ng-if="loading"> </div> Load Data</button>
+              
         </div>
       </div>
       <h2>Employee Table  <span class="badge badge-info">{{ employeeTable.length }}</span> </h2>      
@@ -129,13 +130,14 @@
 </div>
 
 <script>
-const _URL='./employees.json';
+const _URL='https://raw.githubusercontent.com/franklin2009/angularjs/main/employees.json';
 var app = angular.module('myApp', []);
 app.controller('employeeCtrl', function($scope, $http) {
     $scope.employee = {id:0, firstName:"", lastName:"", email:"", phone:"", deleted:false};
     $scope.employeeTable = []; 
     $scope.modalForm = false;
     $scope.modalDelete = false;
+    $scope.loading = false;
     $scope.lastId=1;
     $scope.formType='new';
 
@@ -203,12 +205,23 @@ app.controller('employeeCtrl', function($scope, $http) {
     };
 
     $scope.loadData = function() {
-      $http.get(_URL).then(function(rs) {
-	  if(rs.status===200){
-			$scope.employeeTable=angular.copy(rs.data.employees);
-	  }
-        console.log("loadData", rs)
-     });
+      $scope.loading = true;
+        setTimeout(()=>{
+        
+          $http.get(_URL).then(rs=>{
+            if(rs.status===200){
+              $scope.employeeTable=angular.copy(rs.data.employees);
+            }
+            console.log("loadData", rs);
+            $scope.loading = false;
+          }, er=>{
+            console.log("loadData error", e);
+            $scope.loading = false;
+          });
+
+
+        },2000);
+      
     }
 
 });
