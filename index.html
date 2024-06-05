@@ -133,7 +133,7 @@
 const _URL='https://raw.githubusercontent.com/franklin2009/angularjs/main/employees.json';
 var app = angular.module('myApp', []);
 app.controller('employeeCtrl', function($scope, $http) {
-    $scope.employee = {id:0, firstName:"", lastName:"", email:"", phone:"", deleted:false};
+    $scope.employee = {id:0, firstName:"", lastName:"", email:"", phone:0, deleted:false};
     $scope.employeeTable = []; 
     $scope.modalForm = false;
     $scope.modalDelete = false;
@@ -169,7 +169,6 @@ app.controller('employeeCtrl', function($scope, $http) {
       }
       if($scope.formType==='delete'){
         const index=$scope.employeeTable.findIndex(e => e.id === $scope.employee.id);
-        console.log("delete", $scope.employee, $scope.employeeTable, index)
         if(index > -1){
           $scope.employeeTable[index].deleted=true;
         }
@@ -195,7 +194,7 @@ app.controller('employeeCtrl', function($scope, $http) {
     }
 
     $scope.clean = function() {
-      $scope.employee = {id:0,  firstName:"", lastName:"", email:"", phone:"", deleted:false};
+      $scope.employee = {id:0,  firstName:"", lastName:"", email:"", phone:0, deleted:false};
       $scope.formType='new';
     };
 
