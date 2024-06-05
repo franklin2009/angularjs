@@ -214,7 +214,7 @@ app.controller('employeeCtrl', function($scope, $http) {
             console.log("loadData", rs);
             $scope.loading = false;
           }, er=>{
-            console.log("loadData error", e);
+            console.log("loadData error", er);
             $scope.loading = false;
           });
 
