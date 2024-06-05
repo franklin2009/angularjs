@@ -1,0 +1,13 @@
+{
+  "employees": [
+	{ "id": 1001, "firstName":"Romin", "lastName":"Irani", "email":"romin.k.irani@gmail.com", "phone":"4081234567", "deleted":false },
+	{ "id": 1002, "firstName":"Neil", "lastName":"Ortis", "email":"neil.ortis@gmail.com", "phone":"4011111111", "deleted":false },
+	{ "id": 1003, "firstName":"Tom", "lastName":"Hanks", "email":"tom.hanks@gmail.com", "phone":"4022222222", "deleted":false },
+	{ "id": 1004, "firstName":"Jones", "lastName":"Smith", "email":"jones.smith@gmail.com", "phone":"4081369852", "deleted":false },
+	{ "id": 1005, "firstName":"Cerulean", "lastName":"Red", "email":"cerulean.red@gmail.com", "phone":"4093216548", "deleted":true },
+	{ "id": 1006, "firstName":"Aqua", "lastName":"Sky", "email":"aqua.sky@gmail.com", "phone":"4081852147", "deleted":true },
+	{ "id": 1007, "firstName":"Turquoise", "lastName":"Blue", "email":"turquoise.blue@gmail.com", "phone":"404852369", "deleted":false },
+	{ "id": 1008, "firstName":"Deputy", "lastName":"York", "email":"deputy.york@gmail.com", "phone":"409523641", "deleted":false },
+	{ "id": 1009, "firstName":"Morpheush", "lastName":"Leader", "email":"morpheush.leader@gmail.com", "phone":"401258741", "deleted":false }
+  ]
+}

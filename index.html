@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Employee data</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="Keywords" content="CSS, Bootstrap, AngularJs, Tutorials, Learning, Quiz, Exercises, Courses, Lessons, References, Examples, Learn to code, Source code, Demos, Tips, Website">
+  <meta name="Description" content="How to use HTML, CSS, AngularJs, Examples, References">
+  <link rel="icon" type="image/png" href="employee-icon.png" />
+</head>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular.min.js"></script>
+<style>
+  .modal{
+    background: radial-gradient(#000000e8, #607d8bb0);
+  }
+  .is-deleted{
+    text-decoration: line-through;
+    color: #ed8484;
+  }
+</style>
+
+<body>
+
+<div ng-app="myApp" ng-controller="employeeCtrl">
+
+
+    <div class="container">
+      <div class="my-4">
+        <img src="employee.png" class="w-100 rounded my-1"/>
+        <div class="d-flex justify-content-between">
+              <button type="button" class="btn btn-primary"  ng-click="modal('form',true)">New Employee</button>
+              <button type="button" class="btn btn-secondary"    ng-click="loadData()">Load Data</button>
+        </div>
+      </div>
+      <h2>Employee Table  <span class="badge badge-info">{{ employeeTable.length }}</span> </h2>      
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Firstname</th>
+            <th>Lastname</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat=" item in employeeTable" ng-class="{ 'is-deleted':item.deleted }">
+            <td>{{item.id}}</td>
+            <td>{{item.firstName}}</td>
+            <td>{{item.lastName}}</td>
+            <td>{{item.email}}</td>
+            <td>{{item.phone}}</td>
+            <td>
+              <button type="button" class="btn btn-info" ng-click="edit(item)"  ng-if="!item.deleted"> <i class="bi bi-pencil"></i> </button>
+              <button type="button" class="btn btn-danger" ng-click="delete(item)" ng-if="!item.deleted"> <i class="bi bi-trash"></i> </button> 
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+
+
+
+
+<div class="modal" id="employeeModal" tabindex="-1" role="dialog" aria-labelledby="employeeModal" aria-hidden="true" ng-style="{ display: modalForm ? 'block' : 'none' }">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="employeeModal"> {{ formType === 'new' ? 'New' : 'Edit' }} Employee  {{ formType === 'edit' ? ' ID: ' + employee.id : '' }}</h5>
+        <button type="button" class="close"  aria-label="Close" ng-click="modal('form',false)">  <span aria-hidden="true">&times;</span>  </button>
+      </div>
+      <div class="modal-body">
+        <form novalidate autocomplete="off">
+          <div class="form-group">
+            <label for="firstName">First Name *</label>
+            <input type="text" class="form-control" id="firstName" placeholder="Enter first name" name="firstName"  ng-model="employee.firstName"/>
+          </div>
+          <div class="form-group">
+            <label for="lastName">Last Name *</label>
+            <input type="text" class="form-control" id="lastName" placeholder="Enter last name" name="lastName" ng-model="employee.lastName"/>
+          </div>
+          <div class="form-group">
+            <label for="email">Email *</label>
+            <input type="text" class="form-control" id="email" placeholder="Enter email" name="email" ng-model="employee.email"/>
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone:</label>
+            <input type="number" class="form-control" id="phone" placeholder="Enter phone" name="phone"  ng-model="employee.phone" />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" ng-click="modal('form',false)" >Close</button>
+        <button type="button" class="btn btn-primary" ng-disabled="!isValidForm()" ng-click="save()"> <i class="bi"  ng-class="{'bi-person-add': isValidForm()}" ></i> Save </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal" id="employeeModalDelete" tabindex="-1" role="dialog" aria-labelledby="employeeModalDelete" aria-hidden="true" ng-style="{ display: modalDelete ? 'block' : 'none' }">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="employeeModalDelete">Delete Employee  ID: {{ employee.id }}</h5>
+        <button type="button" class="close"  aria-label="Close" ng-click="modal('delete',false)">  <span aria-hidden="true">&times;</span>  </button>
+      </div>
+      <div class="modal-body">
+        You confirm deleting the employee {{ employee.firstName }}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" ng-click="modal('delete',false)">Close</button>
+        <button type="button" class="btn btn-danger" ng-click="save()" > <i class="bi bi-x-circle" ></i> Delete </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+
+<script>
+const _URL='./employees.json';
+var app = angular.module('myApp', []);
+app.controller('employeeCtrl', function($scope, $http) {
+    $scope.employee = {id:0, firstName:"", lastName:"", email:"", phone:"", deleted:false};
+    $scope.employeeTable = []; 
+    $scope.modalForm = false;
+    $scope.modalDelete = false;
+    $scope.lastId=1;
+    $scope.formType='new';
+
+    $scope.modal = function(type,show) {
+        if(type==='form') {
+          $scope.modalForm = show;
+        } else if(type==='delete'){
+          $scope.modalDelete = show;
+        }
+        if(!show) $scope.clean();
+    }
+    
+    $scope.save = function() {
+      if($scope.isValidForm()){
+        if($scope.formType==='new'){
+          $scope.employee.id=$scope.lastId;
+          $scope.employeeTable.push(angular.copy($scope.employee));
+          $scope.modal('form',false);
+          $scope.lastId+=1;
+          $scope.clean();
+        } else if($scope.formType==='edit'){
+          const index=$scope.employeeTable.findIndex(e => e.id === $scope.employee.id);
+          if(index > -1){
+            $scope.employeeTable[index]=angular.copy($scope.employee);
+            $scope.modal('form',false);
+            $scope.clean();
+          }
+        }
+      }
+      if($scope.formType==='delete'){
+        const index=$scope.employeeTable.findIndex(e => e.id === $scope.employee.id);
+        console.log("delete", $scope.employee, $scope.employeeTable, index)
+        if(index > -1){
+          $scope.employeeTable[index].deleted=true;
+        }
+        $scope.modal('delete',false);
+      }
+
+    };
+
+    $scope.edit = function(employee) {
+      $scope.setEmployee(employee);
+      $scope.formType='edit';
+      $scope.modal('form',true);
+    }
+
+    $scope.delete = function(employee) {
+      $scope.setEmployee(employee);
+      $scope.formType='delete';
+      $scope.modal('delete',true);
+    }
+
+    $scope.isValidForm = function() {
+        return $scope.employee.firstName.trim().length>0 && $scope.employee.lastName.trim().length>0 &&  $scope.employee.email.trim().length>0;
+    }
+
+    $scope.clean = function() {
+      $scope.employee = {id:0,  firstName:"", lastName:"", email:"", phone:"", deleted:false};
+      $scope.formType='new';
+    };
+
+    $scope.setEmployee = function(employee) {
+      $scope.employee = {id: employee.id,  firstName: employee.firstName.trim(), lastName: employee.lastName.trim(), email: employee.email.trim(), phone: employee.phone, deleted: employee.deleted };
+      console.log("employee",$scope.employee)
+    };
+
+    $scope.loadData = function() {
+      $http.get(_URL).then(function(rs) {
+	  if(rs.status===200){
+			$scope.employeeTable=angular.copy(rs.data.employees);
+	  }
+        console.log("loadData", rs)
+     });
+    }
+
+});
+</script>
+
+</body>
+</html>
