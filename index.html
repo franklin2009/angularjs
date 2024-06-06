@@ -171,6 +171,7 @@ app.controller('employeeCtrl', function($scope, $http) {
         const index=$scope.employeeTable.findIndex(e => e.id === $scope.employee.id);
         if(index > -1){
           $scope.employeeTable[index].deleted=true;
+          $scope.employeeTable.splice(index, 1); // borrado fisico
         }
         $scope.modal('delete',false);
       }
@@ -209,7 +210,9 @@ app.controller('employeeCtrl', function($scope, $http) {
         
           $http.get(_URL).then(rs=>{
             if(rs.status===200){
-              $scope.employeeTable=angular.copy(rs.data.employees);
+              //$scope.employeeTable=angular.copy(rs.data.employees);
+              $scope.employeeTable=angular.copy(rs.data.employees.filter(e=>!e.deleted)); // no se muestre los borrados
+              $scope.lastId=1010;
             }
             console.log("loadData", rs);
             $scope.loading = false;
